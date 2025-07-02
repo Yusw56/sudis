@@ -1,0 +1,27 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 10px;
+}
+
+#messages {
+  border: 1px solid #ccc;
+  height: 300px;
+  overflow-y: scroll;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+input {
+  padding: 5px;
+  margin-right: 5px;
+}
+
+button {
+  padding: 5px 10px;
+}
+
+@media (max-width: 600px) {
+  #messages {
+    height: 200px;
+  }
+}

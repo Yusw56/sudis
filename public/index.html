@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yusuf Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="login-screen">
+    <h2>Şifre</h2>
+    <input type="password" id="pww" placeholder="Şifre" />
+    <button onclick="checkPassword()">Giriş</button>
+  </div>
+
+  <div id="nick-screen" style="display:none;">
+    <h2>Nick</h2>
+    <input type="text" id="nick-input" placeholder="Nickini yaz" />
+    <button onclick="saveNick()">Devam</button>
+  </div>
+
+  <div id="chat-screen" style="display:none;">
+    <div id="messages"></div>
+    <input type="text" id="message-input" placeholder="Mesajını yaz" />
+    <button onclick="sendMessage()">Gönder</button>
+  </div>
+
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBCFHwWJ4sf3087jScQgy5Ff3ZTLb3pgpc",
+  authDomain: "wealwaysfindeachothers.firebaseapp.com",
+  databaseURL: "https://wealwaysfindeachothers-default-rtdb.firebaseio.com",
+  projectId: "wealwaysfindeachothers",
+  storageBucket: "wealwaysfindeachothers.firebasestorage.app",
+  messagingSenderId: "618649609090",
+  appId: "1:618649609090:web:11c8bd0b4ac0a1224e259b",
+  measurementId: "G-KM5N2G410K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let nick = localStorage.getItem("nick");
+
+function saveNick() {
+  nick = document.getElementById("nick-input").value.trim();
+  if (nick) {
+    localStorage.setItem("nick", nick);
+    document.getElementById("nick-screen").style.display = "none";
+    document.getElementById("chat-screen").style.display = "block";
+  }
+}
+
+window.saveNick = saveNick;
+
+function sendMessage() {
+  const message = document.getElementById("message-input").value.trim();
+  if (message) {
+    const messagesRef = ref(db, "messages");
+    push(messagesRef, {
+      nick: nick,
+      text: message,
+      isAdmin: nick === "Yusuf"
+    });
+    document.getElementById("message-input").value = "";
+  }
+}
+
+window.sendMessage = sendMessage;
+
+const messagesRef = ref(db, "messages");
+onChildAdded(messagesRef, (data) => {
+  const msg = data.val();
+  const messagesDiv = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.textContent = (msg.isAdmin ? "" : "") + msg.nick + ": " + msg.text;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
+
+// Şifre kontrol fonksiyonu
+function checkPassword() {
+
+  const pw = document.getElementById("pww").value;
+  if (pw === "wafeo") {
+    document.getElementById("login-screen").style.display = "none";
+    if (!nick) {
+      document.getElementById("nick-screen").style.display = "block";
+    } else {
+      document.getElementById("chat-screen").style.display = "block";
+    }
+  } else {
+    alert("Yanlış şifre");
+  }
+}
+
+window.checkPassword = checkPassword;
+
+// Sayfa yenilendiğinde her zaman şifre ekranı gelsin
+window.onload = () => {
+  document.getElementById("login-screen").style.display = "block";
+  document.getElementById("nick-screen").style.display = "none";
+  document.getElementById("chat-screen").style.display = "none";
+};
+window.checkPassword = checkPassword;
+window.saveNick = saveNick;
+window.sendMessage = sendMessage;
+
+  </script>
+</body>
+</html>
