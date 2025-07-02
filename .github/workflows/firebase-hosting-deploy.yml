@@ -1,0 +1,19 @@
+name: Firebase Hosting Deploy
+
+on:
+  push:
+    branches:
+      - main  # Ana dal ismin neyse onu yaz
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: "wealwaysfindeachothers"
